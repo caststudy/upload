@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<!--
+		global control 控制文件大小 commons-fileupload 会提示超出大小 the request was
+		rejected because its size (26419) exceeds the configured maximum
+		(10000) ValueStack vStack =
+		ActionContext.getContext().getValueStack(); CompoundRoot root =
+		vStack.getRoot();
+	-->
+	<constant name="struts.multipart.maxSize" value="100000" />
+
+	<constant name="struts.action.excludePattern" value="/sp/.*,/serv/.*" />
+	<constant name="struts.multipart.saveDir" value="D:/tmp/" />
+	<constant name="struts.locale" value="zh_CN" />
+	<constant name="struts.custom.i18n.resources" value="messages" />
+	<!-- 指定action位置,默认action,actions,struts,struts2 -->
+	<constant name="struts.convention.package.locators" value="s2action"></constant>
+	<!--
+		如果没有使用默认文件名称struts.xml则要包含如下文件 Line: 132 -
+		com/opensymphony/xwork2/inject/ContainerBuilder.java:132:-1 不包含,则 不起作用
+		<include file="struts-default.xml"></include> 
+		<include file="struts-plugin.xml"></include>
+	-->
+	<include file="struts-default.xml"></include>
+	<include file="struts-plugin.xml"></include>
+	<package name="abc" extends="struts-default">
+		<interceptors>
+			<interceptor name="my" class="com.my.interceptor.MyInterceptor"></interceptor>
+			<interceptor-stack name="mystack">
+				<interceptor-ref name="my"></interceptor-ref>
+				<!--
+					org.apache.struts2.interceptor.FileUploadInterceptor 属性
+					消息可以采用国际化资源文件 控制特定action上传文件大小
+				-->
+				<interceptor-ref name="fileUpload">
+					<param name="allowedTypes">image/pjpeg,image/jpeg,image/gif</param>
+					<param name="maximumSize">30000</param>
+					<param name="allowedExtensions ">jpg</param>
+				</interceptor-ref>
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="mystack"></default-interceptor-ref>
+		<global-results>
+			<!-- 定义名为exception的全局result -->
+			<result name="error">/error.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.Exception"
+				result="error" />
+		</global-exception-mappings>
+	</package>
+</struts>    
